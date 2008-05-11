@@ -1,0 +1,10 @@
+--- 
+RssReader: 
+  nick: changeme
+  leaves: 
+  - RssReader
+  rejoin: true
+  channel:
+    "#changeme"
+  server: changeme
+
