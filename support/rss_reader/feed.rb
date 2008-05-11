@@ -1,28 +1,34 @@
 # Provides RSS parsing capabilities
-require 'rss'
+require 'rubygems'
+require 'simple-rss'
+require 'open-uri'
 class Feed < DataMapper::Base
   property :channel, :string, :nullable => false
   property :server, :string, :nullable => false
   property :url, :string, :nullable => false
   property :created_at, :datetime
   property :updated_at, :datetime
+	property :silence, :boolean, :default => false
   
   has_many :feed_datas
   
   attr_accessor :new_from_last_update
   
+	# get new feed entries for this feed and collect new ones in 
+  # <code>:new_from_last_update</code>
   def update_feed_data
     self.new_from_last_update = []
     # Parse the feed, dumping its contents to rss
-    return if (self.url.nil? || self.server.nil? || self.url.nil? )
-    rss = RSS::Parser.parse(self.url, false)
-    rss.items.each do |item|
+		logger.info "help me plx, i'm nil" if self.nil?
+    return if (self.url.nil? || self.server.nil? || self.channel.nil?)
+    return unless rss = SimpleRSS.parse(open(self.url))
+	  rss.items.each do |item|
       if FeedData.first(:pubDate => item.pubDate, :feed_id => self.id)
         # since the objects come sorted in a newest to oldest order, 
         # we don't care about all following, since we got all new ones already
         break;
       else 
-        fd = self.feed_datas.build :title => item.title, :pubDate => item.pubDate
+        fd = self.feed_datas.build :title => item.title, :pubDate => item.pubDate, :link => item.link
         if fd.save
           self.new_from_last_update << fd
         end
