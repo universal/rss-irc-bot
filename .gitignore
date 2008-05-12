@@ -3,3 +3,5 @@ config
 tmp
 *.log
 *.output
+*.sqlite3
+b.rb
