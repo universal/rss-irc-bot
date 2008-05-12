@@ -16,7 +16,7 @@ class Feed < DataMapper::Base
   
 	# get new feed entries for this feed and collect new ones in 
   # <code>:new_from_last_update</code>
-  def update_feed_data
+  def update_feed_data(truncate = false)
     self.new_from_last_update = []
     # Parse the feed, dumping its contents to rss
 		logger.info "help me plx, i'm nil" if self.nil?
@@ -34,6 +34,9 @@ class Feed < DataMapper::Base
         end
       end
     end
-    42
+		if truncate && last = self.new_from_last_update.last
+			fds = FeedData.all :pubDate.lt => last.pubDate, :feed_id => self.id
+			fds.each{|fd| fd.destroy!}			
+		end    
   end
 end

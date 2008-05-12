@@ -4,7 +4,18 @@ require 'rss'
 class RssReader < Autumn::Leaf
 
   before_filter :authenticate, :only => [:reload, :quit, :addFeed, :removeFeed, :silence]
-
+	
+	attr_reader :truncate, :update_interval, :get_rss	
+	
+	# load config for rss reader
+	def will_start_up
+		config = {}		
+		if File.exists?('leaves/rss_reader_config.yml')
+			config = YAML.load(File.open('leaves/rss_reader_config.yml'))
+		end 
+		@truncate = config['truncate'] || false
+		@update_interval = config['update_interval'] || 120 
+	end
 	# send self a message to initialize the background task for retrieving
 	# new feed entries
   def did_start_up
@@ -38,7 +49,6 @@ class RssReader < Autumn::Leaf
 	end
 
 	def silence_command(stem, sender, reply_to, msg)
-		logger.info reply_to
 		feeds = Feed.all :channel => reply_to, :server => server_identifier(stem)
 		sil = !feeds.first.silence
 		feeds.each{|f| f.update_attributes(:silence => sil)}
@@ -49,7 +59,7 @@ class RssReader < Autumn::Leaf
 		end
 		stem.message response, reply_to
 	end
-   
+
   def initrss_command(stem, sender, reply_to, msg)
 		return unless (sender[:nick] == "universal" ||	sender[:nick] == stem.nickname)
     if "stop" == msg
@@ -86,15 +96,14 @@ class RssReader < Autumn::Leaf
 	def rssGetter
     while @get_rss
       updateRss
-      sleep 25.0
+      sleep @update_interval
     end
   end
 
   def updateRss
     stems.each do |stem|
-      logger.info "rss update running"
       feeds = Feed.all :server => server_identifier(stem), :silence => false
-      feeds.each{|f| f.update_feed_data}
+      feeds.each{|f| f.update_feed_data @truncate}
       feeds.each do |feed|
     	  if feed.new_from_last_update.size > 0
     	    (feed.new_from_last_update.size - 1).downto 0 do |i|
