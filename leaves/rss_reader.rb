@@ -31,7 +31,7 @@ class RssReader < Autumn::Leaf
 
   def addFeed_command(stem, sender, reply_to, msg)
 		response = ""		
-		if(msg =~ /https:\/\//)
+		if(msg =~ /https:\/\//i)
 			response = "Sry, unsupported protocol! probably later ;)"
 		else 
 		  f = Feed.find_or_create(:server => server_identifier(stem), :channel => reply_to, :url => msg)
