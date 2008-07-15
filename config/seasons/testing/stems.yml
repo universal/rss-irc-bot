@@ -1,10 +1,10 @@
 --- 
 RssReader: 
-  nick: changeme
+  nick: TracRssBot
   leaves: 
   - RssReader
   rejoin: true
   channel:
-    "#changeme"
-  server: changeme
+    "#ballat figur"
+  server: irc.quakenet.org
 

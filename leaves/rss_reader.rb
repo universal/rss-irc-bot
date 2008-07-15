@@ -115,7 +115,9 @@ class RssReader < Autumn::Leaf
     	    (feed.new_from_last_update.size - 1).downto 0 do |i|
     	      msg = feed.new_from_last_update[i]
             if msg
-    	        stem.message "#{msg.title} at #{msg.pubDate} >> #{msg.link}", feed.channel 
+    	        stem.message "#{msg.title} at #{msg.pubDate.strftime('%d.%m - %H:%M')} >> #{msg.link}", feed.channel
+							# wait a second before next message ;)
+							sleep 1.0
             end
           end
         end
