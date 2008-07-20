@@ -1,4 +1,0 @@
---- 
-RssReader: 
-  adapter: sqlite3
-  database: data/irc.sqlite3 

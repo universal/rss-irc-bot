@@ -1,4 +1,0 @@
---- 
-RssReader: 
-  class: RssReader
-  respond_to_private_messages: true
