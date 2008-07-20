@@ -1,1 +1,3 @@
 Simple Bot which announces newly added RSS-entries to a channel.
+
+The bot requires the 'simple-rss' gem.
