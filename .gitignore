@@ -1,6 +1,12 @@
-log
-config
-tmp
+config/*
+doc/*
+libs/*
+log/*
+resources/*
+script/*
+shared/*
+tmp/*
+Rakefile
 *.log
 *.output
 *.sqlite3
